@@ -1,7 +1,19 @@
 from flask import Flask, jsonify, request
 from http import HTTPStatus
+from flask_restful import Api
+
+from resources.workspace import WorkspaceListResource, WorkspaceResource
 
 app = Flask(__name__)
+api = Api(app)
+
+
+api.add_resource(WorkspaceListResource, '/workspaces')
+api.add_resource(WorkspaceResource, '/workspaces/<int:workspace_id>')
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
+
 
 workspaces = [
     {
@@ -84,5 +96,3 @@ def delete_workspace(workspace_id):
     return '', HTTPStatus.NO_CONTENT
 
 
-if __name__ == '__main__':
-    app.run()
