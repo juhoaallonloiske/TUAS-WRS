@@ -54,7 +54,14 @@ class WorkspaceResource(Resource):
         return workspace.data, HTTPStatus.OK
 
     def delete(self, workspace_id):
-        
+        workspace = next((workspace for workspace in workspace_list if workspace.id == workspace_id), None)
+
+        if workspace is None:
+            return {'message': 'workspace not found'}, HTTPStatus.NOT_FOUND
+
+        workspace_list.remove(workspace)
+
+        return {}, HTTPStatus.NO_CONTENT
 
 
 class WorkspacePublicResource(Resource):
