@@ -16,7 +16,7 @@ class Workspace:
         self.id = get_last_id()
         self.name = name
         self.model = model
-        self.available = False
+        self.is_public = False
 
     @property
     def data(self):
@@ -24,5 +24,5 @@ class Workspace:
             'id': self.id,
             'name': self.name,
             'model': self.model,
-            'available': self.available
+            'is_public': self.is_public
         }
