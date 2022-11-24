@@ -1,15 +1,5 @@
 from extensions import db
 
-workspace_list = []
-
-
-def get_last_id():
-    if workspace_list:
-        last_workspace = workspace_list[-1]
-    else:
-        return 1
-    return last_workspace.id + 1
-
 
 class Workspace(db.Model):
     __tablename__ = 'workspace'
@@ -24,11 +14,28 @@ class Workspace(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"))
     '''Add more data here, e.g. reservation data'''
 
-    @property
+    #@property
     def data(self):
         return {
             'id': self.id,
             'name': self.name,
             'model': self.model,
-            'is_public': self.is_public
+            'user_id': self.user_id
         }
+
+    @classmethod
+    def get_all_published(cls):
+        return cls.query.filter_by(is_public=True).all()
+
+    @classmethod
+    def get_by_id(cls, workspace_id):
+        return cls.query.filter_by(id=workspace_id).first()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+

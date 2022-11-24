@@ -15,12 +15,16 @@ class User(db.Model):
     workspace = db.relationship('Workspace', backref='user')
 
     @classmethod
-    def get_by_username(cls, username):
-        return cls.query.filter_by(username=username).first()
+    def get_by_username(cls, name):
+        return cls.query.filter_by(name=name).first()
 
     @classmethod
     def get_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
 
     def save(self):
         db.session.add(self)
