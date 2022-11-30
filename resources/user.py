@@ -4,7 +4,42 @@ from http import HTTPStatus
 
 from utils import hash_password
 from models.user import User
+from models.workspace import Workspace
 from flask_jwt_extended import jwt_optional, get_jwt_identity, jwt_required
+
+from webargs import fields
+from webargs.flaskparser import use_kwargs
+
+from schemas.user import UserSchema
+from schemas.workspace import WorkspaceSchema
+
+workspace_list_schema = WorkspaceSchema(many=True)
+
+user_schema = UserSchema()
+user_public_schema = UserSchema(exclude=('email', ))
+
+
+class UserWorkspaceListResource(Resource):
+
+    @jwt_optional
+    @use_kwargs({'visibility': fields.Str(missing='public')})
+    def get(self, name, visibility):
+
+        user = User.get_by_username(name=name)
+
+        if user is None:
+            return {'message': 'User not found'}, HTTPStatus.NOT_FOUND
+
+        current_user = get_jwt_identity()
+
+        if current_user == user.id and visibility in ['all', 'private']:
+            pass
+        else:
+            visibility = 'public'
+
+        workspace = Workspace.get_all_by_user(user_id=user.id, visibility=visibility)
+
+        return workspace_list_schema.dump(workspace).data, HTTPStatus.OK
 
 
 class MeResource(Resource):
@@ -14,13 +49,7 @@ class MeResource(Resource):
 
         user = User.get_by_id(id=get_jwt_identity())
 
-        data = {
-            'id': user.id,
-            'name': user.name,
-            'email': user.email
-        }
-
-        return data, HTTPStatus.OK
+        return user_schema.dum(user).data, HTTPStatus.OK
 
 
 class UserResource(Resource):
@@ -35,16 +64,11 @@ class UserResource(Resource):
         current_user = get_jwt_identity()
 
         if current_user == user.id:
-            data = {
-                'id': user.id,
-                'name': user.name,
-                'email': user.email
-            }
+            data = user_schema.dump(user).data
+
         else:
-            data = {
-                'id': user.id,
-                'name': user.name,
-            }
+            data = user_public_schema.dump(user).data
+
         return data, HTTPStatus.OK
 
 
@@ -52,31 +76,19 @@ class UserListResource(Resource):
     def post(self):
         json_data = request.get_json()
 
-        name = json_data.get('name')
-        email = json_data.get('email')
-        non_hash_password = json_data.get('password')
+        data, errors = user_schema.load(data=json_data)
 
-        if User.get_by_username(name):
+        if errors:
+            return {'message': 'Validation errors', 'errors': errors}, HTTPStatus.BAD_REQUEST
+
+        if User.get_by_username(data.get('name')):
             return {'message': 'name already used'}, HTTPStatus.BAD_REQUEST
 
-        if User.get_by_email(email):
+        if User.get_by_email(data.get('email')):
             return {'message': 'email already used'}, HTTPStatus.BAD_REQUEST
 
-        password = hash_password(non_hash_password)
-
-        user = User(
-            name=name,
-            email=email,
-            password=password
-        )
-
+        user = User(**data)
         user.save()
 
-        data = {
-            'id': user.id,
-            'name': user.name,
-            'email': user.email
-        }
-
-        return data, HTTPStatus.CREATED
+        return user_schema.dump(user).data, HTTPStatus.CREATED
 

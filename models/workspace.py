@@ -6,7 +6,7 @@ class Workspace(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    model = db.Column(db.String(100))
+    model = db.Column(db.String(100), nullable=False)
     is_public = db.Column(db.Boolean(), default=False)
     created_at = db.Column(db.DateTime(), nullable=False, server_default=db.func.now())
     updated_at = db.Column(db.DateTime(), nullable=False, server_default=db.func.now(), onupdate=db.func.now())
@@ -14,14 +14,14 @@ class Workspace(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"))
     '''Add more data here, e.g. reservation data'''
 
-    #@property
-    def data(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'model': self.model,
-            'user_id': self.user_id
-        }
+    @classmethod
+    def get_all_by_user(cls, user_id, visibility='public'):
+        if visibility == 'public':
+            return cls.query.filter_by(user_id=user_id, is_public=True).all()
+        elif visibility == 'private':
+            return cls.query.filter_by(user_id=user_id, is_public=False)
+        else:
+            return cls.query.filter_by(user_id=user_id).all()
 
     @classmethod
     def get_all_published(cls):
