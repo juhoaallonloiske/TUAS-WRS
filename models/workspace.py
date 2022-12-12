@@ -12,7 +12,8 @@ class Workspace(db.Model):
     updated_at = db.Column(db.DateTime(), nullable=False, server_default=db.func.now(), onupdate=db.func.now())
 
     user_id = db.Column(db.Integer(), db.ForeignKey("user.id"))
-    '''Add more data here, e.g. reservation data'''
+
+    '''def data?? s.108'''
 
     @classmethod
     def get_all_by_user(cls, user_id, visibility='public'):
