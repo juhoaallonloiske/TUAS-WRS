@@ -8,6 +8,7 @@ from extensions import db, jwt
 from resources.user import UserListResource, UserResource, MeResource, UserWorkspaceListResource
 from resources.token import TokenResource, RefreshResource, RevokeResource, black_list
 from resources.workspace import WorkspaceListResource, WorkspaceResource, WorkspacePublicResource
+from resources.reservation import ReservationListResource, ReservationResource, ReservationActiveResource
 
 
 def create_app():
@@ -40,12 +41,18 @@ def register_resources(app):
     api.add_resource(MeResource, '/me')
     api.add_resource(UserListResource, '/users')
     api.add_resource(UserResource, '/users/<string:name>')
+
     api.add_resource(TokenResource, '/token')
     api.add_resource(RefreshResource, '/refresh')
     api.add_resource(RevokeResource, '/revoke')
+
     api.add_resource(WorkspaceListResource, '/workspaces')
     api.add_resource(WorkspaceResource, '/workspaces/<int:workspace_id>')
     api.add_resource(WorkspacePublicResource, '/workspaces/<int:workspace_id>/public')
+
+    api.add_resource(ReservationListResource, '/reservations')
+    api.add_resource(ReservationResource, '/reservations/<int:reservation_id>')
+    api.add_resource(ReservationActiveResource, '/reservations/<int:reservation_id>/active')
 
 
 if __name__ == '__main__':

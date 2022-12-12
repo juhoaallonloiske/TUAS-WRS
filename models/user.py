@@ -13,6 +13,7 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime(), nullable=False, server_default=db.func.now(), onupdate=db.func.now())
 
     workspace = db.relationship('Workspace', backref='user')
+    reservation = db.relationship('Reservation', backref='user')
 
     @classmethod
     def get_by_username(cls, name):
@@ -29,5 +30,3 @@ class User(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
-
-'''class Reservation'''
