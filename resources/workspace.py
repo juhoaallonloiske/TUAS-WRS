@@ -154,7 +154,4 @@ class WorkspacePublicResource(Resource):
         return {}, HTTPStatus.NO_CONTENT
 
 
-'''Tee ClientListRescource, ClientResource, ReservationListResource, ReservationResource'''
-
-
 

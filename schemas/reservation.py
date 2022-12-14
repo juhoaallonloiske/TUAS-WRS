@@ -2,9 +2,6 @@ from marshmallow import Schema, fields, post_dump, validate, validates, Validati
 from schemas.user import UserSchema
 
 
-'''fields.DateTime date, start and end'''
-
-
 class ReservationSchema(Schema):
     class Meta:
         ordered = True
@@ -13,6 +10,7 @@ class ReservationSchema(Schema):
     date = fields.Integer(required=True)
     start = fields.Integer(required=True)
     end = fields.Integer(required=True)
+    workspaceId = fields.Integer(required=True)
     is_active = fields.Boolean(dump_only=True)
 
     created_at = fields.DateTime(dump_only=True)
@@ -25,3 +23,10 @@ class ReservationSchema(Schema):
         if many:
             return {'data': data}
         return data
+
+    @validates('start')
+    def validate_start(self, n):
+        if n <= 16:
+            raise ValidationError('There is no available times before 16.00')
+        if n >= 21:
+            raise ValidationError('There is no available times after 21.00')

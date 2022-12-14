@@ -1,11 +1,5 @@
-'''Importoi Date toiminto ->> datetime
-Importoi myös ehkä User ja Workspace että saadaan IDt? >>>> ei ehkä tarvita ollenkaan id tietoja reservationiin, jos
-reservation omistus näkyy userin reservationeissa pyydettäessä >> eli ei attribuutteja välttämättä'''
-
 from datetime import *
 from extensions import db
-
-'''Datetime() for date, start and end'''
 
 
 class Reservation(db.Model):
@@ -14,6 +8,7 @@ class Reservation(db.Model):
     date = db.Column(db.Integer)
     start = db.Column(db.Integer)
     end = db.Column(db.Integer)
+    workspaceId = db.Column(db.Integer)
     is_active = db.Column(db.Boolean(), default=False)
     created_at = db.Column(db.DateTime(), nullable=False, server_default=db.func.now())
     updated_at = db.Column(db.DateTime(), nullable=False, server_default=db.func.now(), onupdate=db.func.now())

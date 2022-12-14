@@ -98,10 +98,11 @@ class ReservationResource(Resource):
         reservation.date = json_data['date']
         reservation.start = json_data['start']
         reservation.end = json_data['end']
+        reservation.workspaceId = json_data['workspaceId']
 
         reservation.save()
 
-        return reservation.data(), HTTPStatus.OK
+        return reservation_schema.dump(reservation).data, HTTPStatus.OK
 
     @jwt_required
     def delete(self, reservation_id):
